@@ -73,11 +73,6 @@ namespace LIS2MDL {
         setreg(reg, (getUInt8LE(reg) & mask) | dat)
     }
 
-    // turn number to int16
-    function int16(n: number): number {
-        return (n > 0x7fff) ? n - 65536 : n
-    }
-
     // oneshot mode handle
     function ONE_SHOT(): void {
         if (_oneshot) {
