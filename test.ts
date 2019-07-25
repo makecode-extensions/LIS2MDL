@@ -1,4 +1,4 @@
 basic.forever(function () {
-    serial.writeNumbers(LIS2MDL.get())
+    serial.writeValue("x", LIS2MDL.magneticForce(LIS2MDL.Dimension.Strength))
     basic.pause(1000)
 })
