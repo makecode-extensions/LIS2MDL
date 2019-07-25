@@ -17,6 +17,17 @@ namespace LIS2MDL {
     const LIS2MDL_OUTY_L_REG = 0x6A
     const LIS2MDL_OUTZ_L_REG = 0x6C
 
+    export enum Dimension {
+        //% block="Strength"
+        Strength = 0,
+        //% block="X"
+        X = 1,
+        //% block="Y"
+        Y = 2,
+        //% block="Z"
+        Z = 3
+    }
+
     // LP = 0 ODR= 0 MD= 0
     setreg(LIS2MDL_CFG_REG_A, 0x00)
     // BDU = 1
@@ -91,38 +102,32 @@ namespace LIS2MDL {
     }
 
     /**
-     * get X-axis magnetic field
+     * get magneticForce (uT)
      */
-    //% block="x"
-    export function x(): number {
+    //% block="magneticForce (uT) %dim"
+    export function magneticForce(dim: LIS2MDL.Dimension = LIS2MDL.Dimension.X): number {
         ONE_SHOT()
-        return getInt16LE(LIS2MDL_OUTX_L_REG)
-    }
-
-    /**
-     * get Y-axis magnetic field
-     */
-    //% block="y"
-    export function y(): number {
-        ONE_SHOT()
-        return getInt16LE(LIS2MDL_OUTY_L_REG)
-    }
-
-    /**
-     * get Z-axis magnetic field
-     */
-    //% block="z"
-    export function z(): number {
-        ONE_SHOT()
-        return getInt16LE(LIS2MDL_OUTZ_L_REG)
+        switch (dim) {
+            case Dimension.X:
+                return Math.idiv(getInt16LE(LIS2MDL_OUTX_L_REG) * 3, 20);
+            case Dimension.Y:
+                return Math.idiv(getInt16LE(LIS2MDL_OUTY_L_REG) * 3, 20);
+            case Dimension.Z:
+                return Math.idiv(getInt16LE(LIS2MDL_OUTZ_L_REG) * 3, 20);
+            default:
+                let x = (getInt16LE(LIS2MDL_OUTX_L_REG) * 3 / 20) ** 2
+                let y = (getInt16LE(LIS2MDL_OUTY_L_REG) * 3 / 20) ** 2
+                let z = (getInt16LE(LIS2MDL_OUTZ_L_REG) * 3 / 20) ** 2
+                return Math.round(Math.sqrt(x + y + z))
+        }
     }
 
     /**
      * get X/Y/Z-axis magnetic field at once
      */
-    //% block="get"
+    //% block="get (uT)"
     export function get(): number[] {
         ONE_SHOT()
-        return [getInt16LE(LIS2MDL_OUTX_L_REG), getInt16LE(LIS2MDL_OUTY_L_REG), getInt16LE(LIS2MDL_OUTZ_L_REG)]
+        return [Math.idiv(getInt16LE(LIS2MDL_OUTX_L_REG) * 3, 20), Math.idiv(getInt16LE(LIS2MDL_OUTY_L_REG) * 3, 20), Math.idiv(getInt16LE(LIS2MDL_OUTZ_L_REG) * 3, 20)]
     }
 }
